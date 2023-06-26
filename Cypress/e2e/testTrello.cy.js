@@ -6,18 +6,25 @@ const nomListe1 = faker.random.word();
 const nomListe2 = faker.random.word();
 const nomCarte = faker.random.word();
 const descriptionCarte = faker.lorem.sentence();
+const home = 'https://trello.com/home'
+const password = 'Test-123-456'
+const board = 'https://trello.com/u/00b301ccc2f2476497ce4f8528712df6/boards'
 const firstMail = '00b301cc-c2f2-4764-97ce-4f8528712df6@mailslurp.com'
 const secMail = '94db1f4c-f721-4692-a411-847a622bdaef@mailslurp.com'
 
-describe.only('template spec', () => {
+
+describe.skip('template spec', () => { 
+
+  //Inscription
 
   beforeEach(() => {
-    cy.visit('https://trello.com/home');
+    cy.visit(home);
     cy.get('.Buttonsstyles__ButtonGroup-sc-1jwidxo-3 > [href="/login"]').click();
     cy.url().should('include', '/login');
   });
 
-  
+  //CAS_01_Inscription: Parcours d'inscription par Mailslurp
+
   it('Register', () => {
     cy.task('createInbox').then(inbox => {
       cy.get('#user').type(inbox.emailAddress);
@@ -34,7 +41,7 @@ describe('Action sur Trello', () => {
 
   //connexion à TRELLO
 
-  cy.visit('https://trello.com/home');
+  cy.visit(home);
   cy.get('#BXP-APP > header.BigNavstyles__Header-sc-1mttgq7-1.hNNfeR > div > div.BigNavstyles__NavBar-sc-1mttgq7-3.caTbTe > div.Buttonsstyles__ButtonGroup-sc-1jwidxo-3.jnMZCI > a:nth-child(1)').click()
   cy.wait(1000)
   cy.url().should('eql', 'https://trello.com/login')
@@ -42,7 +49,6 @@ describe('Action sur Trello', () => {
   cy.get('#login').click()
   cy.wait(1000)
   cy.origin('https://id.atlassian.com', () => {
-
   cy.get('#password').type('Test-123-456')
   cy.get('#login-submit').click()
   })  
@@ -52,20 +58,10 @@ describe('Action sur Trello', () => {
 
   //supprimer le tableau
 
-    /*cy.visit('https://trello.com/home');
-    cy.get('.Buttonsstyles__Button-sc-1jwidxo-0').click()
-    cy.wait(1000)
-    cy.get('#user').type(firstMail)
-    cy.get('#login').click()
-    cy.wait(1000)
-    cy.origin('https://id.atlassian.com', () => {
-  
-    cy.get('#password').type('Test-123-456')
-    cy.get('#login-submit').click()
-    }) */
-    cy.visit('https://trello.com/u/00b301ccc2f2476497ce4f8528712df6/boards')
+    cy.visit(board)
     cy.get('[data-testid="home-team-boards-tab"]').click()
     cy.get('.board-tile-details').contains(nomTableau).click()
+    cy.wait(500)
     cy.get('.GDunJzzgFqQY_3 > .nch-icon > [data-testid="OverflowMenuHorizontalIcon"]').click()
     cy.get(':nth-child(5) > .board-menu-navigation-item-link').click()
     cy.get(':nth-child(5) > .board-menu-navigation-item > .board-menu-navigation-item-link').click()
@@ -75,13 +71,11 @@ describe('Action sur Trello', () => {
     cy.url().should('contain', 'home')
   });
 
-
-
   it('CAS_02_Tableau', () => {
 
   // CAS_02_Tableau_Création d'un tableau
 
-    cy.url().should('eql', 'https://trello.com/u/00b301ccc2f2476497ce4f8528712df6/boards')
+    cy.url().should('eql', board)
     cy.wait(1000)
     cy.get('[data-testid="create-board-tile"] > .board-tile').click()
     cy.get('[data-testid="create-board-title-input"]').type(nomTableau)
@@ -93,28 +87,23 @@ describe('Action sur Trello', () => {
   
   // CAS_03_Liste_Création d'une liste
   
-    cy.url().should('eql', 'https://trello.com/u/00b301ccc2f2476497ce4f8528712df6/boards')
+    cy.url().should('eql', board)
     cy.wait(1000)
     cy.get('.rVz43wK3rQUlj3 > :nth-child(1) > .oTmCsFlPhDLGz2 > .DD3DlImSMT6fgc').click()
-    //cy.get(':nth-child(1) > .board-tile > .board-tile-details > .board-tile-details-name > div').click()
     cy.get('.board-tile-details').contains(nomTableau).click()
     cy.get('.js-add-list').click()
     cy.get('.list-name-input').type(nomListe1)
     cy.get('.list-add-controls > .nch-button').click()
-    //cy.get('#board > div:nth-child(4) > div > div.list-header.js-list-header.u-clearfix.is-menu-shown > h2').should('have.text', nomListe1) // Vérifier l'existence de la liste créée
     cy.get('#board').should('contain', nomListe1) // Vérifier l'existence de la liste créée
-
-  
   });
 
   it('CAS_04_Carte, CAS_05_Carte_déplacement, CAS_06_Carte_modification, CAS_07_Carte_suppression', () => {
     
   // CAS_04_Carte : création d'une carte
     
-    cy.url().should('eql', 'https://trello.com/u/00b301ccc2f2476497ce4f8528712df6/boards')
+    cy.url().should('eql', board)
     cy.wait(1000)
     cy.get('.rVz43wK3rQUlj3 > :nth-child(1) > .oTmCsFlPhDLGz2 > .DD3DlImSMT6fgc').click()
-    //cy.get(':nth-child(1) > .board-tile > .board-tile-details > .board-tile-details-name > div').click()
     cy.get('.board-tile-details').contains(nomTableau).click()
     cy.get(':nth-child(1) > .list > .card-composer-container > .open-card-composer').click()
     cy.get('.list-card-composer-textarea').type(nomCarte)
@@ -134,7 +123,6 @@ describe('Action sur Trello', () => {
     cy.get('[data-testid="move-card-popover-select-list-destination"]').select(nomListe2) //
     cy.get('[data-testid="move-card-popover-move-button"]').click()
     cy.get('.icon-md').click()
-    //cy.get('#board > div:nth-child(5) > div').should('contain', nomCarte) // Vérifier l'existence de la carte créée dans la liste ciblée
     cy.get('#board').should('contain', nomCarte) // Vérifier l'existence de la carte créée dans la liste ciblée
 
     // CAS_06_Carte_modification: modification du contenu d'une carte
@@ -158,7 +146,7 @@ describe('Action sur Trello', () => {
 
     // CAS_08_CAS_08_Membre: Ajouter un membre au board
 
-    //cy.get('.board-tile-details').should('contain', nomTableau)
+    cy.get('.board-tile-details').should('contain', nomTableau) //Vérifier que le tableau créé précédemment existe
     cy.get('.board-tile-details').contains('test').click()
     cy.get('[data-testid="board-share-button"]').click()
     cy.get('[data-testid="add-members-input"]').type(secMail)
